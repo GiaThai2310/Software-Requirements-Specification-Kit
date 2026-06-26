@@ -20,14 +20,6 @@ tags:
 
 # Software Requirements Specification
 
-> [!important] Template usage
-> - Thay toàn bộ nội dung trong dấu `<...>`.
-> - Giữ nguyên ID sau khi đã được sử dụng hoặc tham chiếu.
-> - Với mục không áp dụng, ghi `Not Applicable` và nêu lý do trước khi loại khỏi bản cuối.
-> - Không điền thông tin chưa được xác nhận như một sự thật. Dùng `[TBD]` hoặc `[ASSUMPTION]` khi cần.
-> - Hướng dẫn chi tiết cho từng phần được trình bày tại [SRS-Guide].
-> - Kiến thức nền tảng được trình bày tại [SRS-About].
-
 ---
 
 # 0. Document Control
