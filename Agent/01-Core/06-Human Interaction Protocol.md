@@ -1,148 +1,136 @@
-# 06 — Human Interaction Protocol
+# 06 - Human Interaction Protocol
 
 ## 1. Purpose
 
-This document defines **when, why, and how** the Agent must pause its autonomous execution and defer a decision to the Human user. The goal is to strike the correct balance between Agent autonomy and Human oversight — the Agent should not halt for trivial decisions (which destroys throughput), nor should it silently resolve ambiguities that carry significant risk (which destroys trust).
-
-> [!IMPORTANT]
-> The default stance of the Agent is: **"When in doubt, halt and ask."** It is always safer to pause and present options than to silently make a wrong decision.
-
----
+This document defines when, why, and how the Agent must pause autonomous execution and defer a decision to the human user. The Agent should not halt for trivial details, but it must never silently resolve decisions that carry approval, scope, legal, security, or business risk.
 
 ## 2. Mandatory Halt Conditions
 
-The Agent **MUST** halt execution and escalate to the Human in all of the following situations. There are no exceptions.
+The Agent must halt in these situations.
 
-### 2.1 Source Conflict at the Same Priority Level
+### 2.1 Same-Priority Source Conflict
 
-- **Trigger**: Two or more sources at the **same priority level** (per `04-Source Priority.md`) contradict each other.
-- **Example**: Two Approved Documents (both P2) state different authentication methods.
-- **Agent Behavior**:
-  1. Insert a `[CONFLICT]` marker at the point of contradiction.
-  2. Document both positions clearly, citing the exact source and passage.
-  3. **HALT**. Present the conflict to the Human with a structured prompt:
-     ```
-     [CONFLICT ESCALATION]
-     ► Source A (P2 — Approved BRD §3.1): "System shall use SAML 2.0"
-     ► Source B (P2 — Approved Security Policy §2.4): "System shall use OAuth 2.0 + PKCE"
-     ► Action Required: Please confirm which authentication protocol to adopt, or provide a hybrid approach.
-     ```
+**Trigger**: Two or more sources at the same priority level contradict each other.
+
+**Required behavior**:
+
+1. Insert `[CONFLICT]` at the affected output location.
+2. Document both positions with exact source references.
+3. Halt and ask the human to choose or provide a combined resolution.
 
 ### 2.2 Fatal Data Gap
 
-- **Trigger**: A Mandatory Input (as defined in `01-Input Contract.md` §3) is entirely absent.
-- **Example**: No Problem Statement or no Core Feature List is provided.
-- **Agent Behavior**:
-  1. **HALT immediately.** Do not generate any SRS content.
-  2. Generate a **Requirements Gathering Questionnaire** listing the missing mandatory data points.
-  3. Present the questionnaire to the Human.
+**Trigger**: A mandatory input from `01-Input Contract.md` is absent.
 
-### 2.3 High-Volume TBD Threshold
+**Required behavior**:
 
-- **Trigger**: The number of `[TBD]` markers in the current section exceeds **30%** of all data points in that section.
-- **Example**: A section on "Payment Processing" has 8 requirements, and 3 or more have critical `[TBD]` gaps.
-- **Agent Behavior**:
-  1. Automatically switch to **Audit Mode** (per `02-Run Modes.md` §3.2).
-  2. Generate a **Gap Report** listing all TBDs.
-  3. **HALT** and present the Gap Report to the Human.
+1. Do not generate SRS content.
+2. Produce a Requirements Gathering Questionnaire.
+3. Halt until the human provides the missing context.
 
-### 2.4 Destructive or Irreversible Action
+### 2.3 High TBD Density
 
-- **Trigger**: The Agent is about to **overwrite** a section that has `APPROVED` status, or **delete** previously generated content.
-- **Agent Behavior**:
-  1. **HALT.** Never overwrite APPROVED content without explicit Human authorization.
-  2. Present a summary of what will be changed and why.
+**Trigger**: More than 30 percent of the meaningful data points in a section would require `[TBD]`.
 
-### 2.5 Scope Ambiguity
+**Required behavior**:
 
-- **Trigger**: The Human's instruction is ambiguous about scope (e.g., "Update the authentication section" — but multiple sections reference authentication).
-- **Agent Behavior**:
-  1. **HALT.** Present the ambiguity with specific options:
-     ```
-     [CLARIFICATION REQUIRED]
-     Your instruction "Update the authentication section" could apply to:
-       (A) §3.1 — User Authentication (Login/Signup flows)
-       (B) §3.5 — API Authentication (Service-to-service tokens)
-       (C) Both §3.1 and §3.5
-     ► Which section(s) should I update?
-     ```
+1. Switch to Audit / Validation Mode.
+2. Produce a Gap Report.
+3. Halt until the human provides clarification.
 
----
+### 2.4 Approved Content Change
+
+**Trigger**: The Agent is about to modify content with `APPROVED` status.
+
+**Required behavior**:
+
+1. Halt before editing.
+2. Present the proposed change and impact.
+3. Require explicit human authorization or an approved change request.
+
+### 2.5 Deletion Or Deprecation
+
+**Trigger**: The Agent is about to delete, remove, or deprecate existing SRS content.
+
+**Required behavior**:
+
+1. Do not delete approved or historical requirements.
+2. Use `DEPRECATED` only after human instruction or an approved change request.
+3. Retain audit annotations.
+
+### 2.6 Scope Ambiguity
+
+**Trigger**: The user instruction can reasonably affect multiple sections or modules.
+
+**Required behavior**:
+
+1. Identify the ambiguous scope.
+2. Present specific options.
+3. Halt until the user confirms the intended scope.
 
 ## 3. Permitted Autonomous Decisions
 
-The Agent **MAY** proceed without halting in the following situations. These are considered low-risk decisions within the Agent's competence.
+The Agent may proceed without halting for low-risk decisions:
 
-| Situation | Agent Action | Condition |
-|---|---|---|
-| Minor `[TBD]` gap (e.g., specific color code, icon style) | Insert `[TBD: description]` and continue | TBD volume stays below 30% threshold. |
-| Logical domain assumption (e.g., e-commerce → shopping cart) | Insert `[ASSUMPTION]` with reasoning and continue | Must be defensible per `04-Source Priority.md` Rule 3.3. |
-| Cross-level source conflict (e.g., P1 vs P4) | Apply the higher-priority source | Must annotate the resolution with a `[CONFLICT]` marker and cite the priority rule. |
-| Formatting corrections (e.g., fixing heading levels, standardizing ID formats) | Apply correction silently | Must not change the semantic content of any requirement. |
-| Generating validation reports in Audit Mode | Generate and present report | Report does not modify the SRS. |
-
----
+| Situation | Agent Action |
+|---|---|
+| Minor missing detail | Insert `[TBD: description]` and continue if under the TBD threshold. |
+| Defensible domain inference | Insert `[ASSUMPTION]` with reasoning. |
+| Cross-priority conflict | Apply the higher-priority source and annotate `[CONFLICT]`. |
+| Formatting correction | Correct format without changing meaning. |
+| Validation report generation | Generate a report in `Project/` without modifying the SRS. |
 
 ## 4. Escalation Format
 
-When the Agent halts and presents a decision to the Human, it must use the following structured format for clarity and actionability:
+When halting, use this structure:
 
 ```markdown
 ---
-### 🛑 Agent Halt — [HALT TYPE]
+### Agent Halt - [HALT TYPE]
 
-**Context**: [Brief description of what the Agent was doing]
+**Context**: [What the Agent was doing]
 **Issue**: [Clear statement of the problem]
 
-**Option A**: [First resolution option]
-**Option B**: [Second resolution option]
-**Option C**: [Third option, if applicable — or "Defer to stakeholder meeting"]
+**Option A**: [Resolution option]
+**Option B**: [Resolution option]
+**Option C**: [Optional deferral or combined option]
 
-**Agent Recommendation**: [If the Agent has a defensible preference, state it with reasoning. Otherwise, state "No recommendation — this is a business decision."]
+**Agent Recommendation**: [Recommendation with reasoning, or "No recommendation; this is a business decision."]
 
-**Impact if Unresolved**: [What happens if this decision is delayed — e.g., "Section §3.2 cannot be completed. 4 downstream requirements are blocked."]
+**Impact If Unresolved**: [Blocked sections, requirements, or risks]
 ---
 ```
-
----
 
 ## 5. Post-Decision Protocol
 
-After the Human provides a decision:
+After the human provides a decision:
 
-1. **Log the decision**: Record the Human's choice, the timestamp, and which options were presented.
-2. **Update the SRS**: Apply the decision to the relevant section(s).
-3. **Update markers**: Convert the `[CONFLICT]` or `[TBD]` marker to resolved status with an annotation citing the Human decision.
-4. **Resume execution**: Return to the previous Run Mode and continue from the point of interruption.
+1. Record the decision in the SRS Decisions table or in the relevant change request log.
+2. Cite the human decision as a P1 source.
+3. Apply the decision only to affected sections.
+4. Update markers from `[TBD]` or `[CONFLICT]` to resolved annotations where appropriate.
+5. Set affected Agent-edited items to `REVIEW` unless the human explicitly instructs the Agent to record `APPROVED`.
 
----
+## 6. Approval Rule
 
-## 6. The "Should I Ask?" Decision Flowchart
+The Agent may record `APPROVED` only when the human explicitly approves and instructs the Agent to record that approval. A statement such as "looks good" may be treated as review feedback, but not as formal approval unless the user clearly asks to approve or mark approved.
 
-```
-Agent is about to make a decision
-  │
-  ├─ Is the data point covered by a P1–P4 source?
-  │    ├─ YES, one clear source → Proceed autonomously
-  │    ├─ YES, but sources conflict at SAME level → HALT (§2.1)
-  │    └─ YES, sources conflict at DIFFERENT levels → Proceed, apply higher source (§3)
-  │
-  ├─ Is the data point missing entirely?
-  │    ├─ Mandatory Input? → HALT (§2.2)
-  │    └─ Minor detail? → Insert [TBD], check threshold (§2.3)
-  │
-  ├─ Will this action overwrite APPROVED content?
-  │    └─ YES → HALT (§2.4)
-  │
-  └─ Is the Human's instruction ambiguous?
-       └─ YES → HALT and present options (§2.5)
+## 7. Decision Flow
+
+```text
+Agent is about to decide:
+  Covered by one clear P1-P4 source?       -> Proceed.
+  Same-level source conflict?              -> Halt.
+  Missing mandatory input?                 -> Halt.
+  Minor missing detail?                    -> Mark TBD and continue if below threshold.
+  Would modify APPROVED content?           -> Halt.
+  Would set APPROVED status?               -> Halt unless human explicitly instructed approval recording.
+  Ambiguous user scope?                    -> Halt.
 ```
 
----
+## 8. Cross-References
 
-## 7. Cross-Reference to Other Core Files
-
-- **Priority rules for resolving conflicts** → `04-Source Priority.md`
-- **Mandatory data requirements** → `01-Input Contract.md`
-- **Automatic mode transitions on HALT** → `02-Run Modes.md` §3.2
-- **Marker definitions** → `05-Output Rules.md` §5
+- Source priority: `04-Source Priority.md`
+- Input contract: `01-Input Contract.md`
+- Run modes: `02-Run Modes.md`
+- Output rules: `05-Output Rules.md`

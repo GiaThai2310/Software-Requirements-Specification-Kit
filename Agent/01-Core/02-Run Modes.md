@@ -1,105 +1,107 @@
-# 02 — Run Modes
+# 02 - Run Modes
 
 ## 1. Purpose
 
-This document defines the execution strategies (**Run Modes**) for the AI Agent when working on a Software Requirements Specification (SRS). Its primary objectives are to:
+Run Modes define how deeply the Agent should work on an SRS task. They prevent uncontrolled full-document regeneration, reduce context waste, and protect approved content from accidental drift.
 
-- Optimize the **Context Window** usage
-- Prevent unnecessary token consumption and cost
-- Avoid **hallucination** and generation of uncontrolled "walls of text"
-- Prevent schema drift and loss of prior approved states
-
-> [!IMPORTANT]
-> The Agent is **strictly prohibited** from automatically regenerating the entire SRS document in any circumstance, unless explicitly operating in **Full Generation Mode** or when the target file is completely empty.
-
-Before initiating any writing task, the Agent **MUST** assess the current project state and select the appropriate Run Mode — either by determining it autonomously or by asking the Human user for clarification.
-
----
+The default mode is **Incremental Mode** unless the user explicitly requests another mode or the target file is empty.
 
 ## 2. Supported Run Modes
 
-There are **5 execution modes**. The Agent must identify or confirm the active mode with the Human before beginning any work.
+### Mode 1 - Draft / Outline Mode
 
----
+**Trigger**: A new project exists but the macro structure has not been confirmed.
 
-### Mode 1: Draft / Outline Mode
+**Objective**: Establish the high-level SRS structure before detailed requirements are written.
 
-- **Trigger**: Start of a new project; the macro structure of the system has not yet been confirmed.
-- **Objective**: Lock down the high-level architecture before any detailed analysis begins.
-- **Agent Behavior**:
-  1. Read `01-Input Contract.md` and `SRS-Template.md`.
-  2. Generate only a **Table of Contents (TOC)** and a high-level **Executive Summary**.
-  3. **Do NOT** write any detailed requirements at this stage.
-  4. Halt and request **Human approval** (Human-in-the-loop checkpoint) before proceeding.
+**Agent behavior**:
 
----
+1. Read `01-Input Contract.md`, `SRS-TOC.md`, and `SRS-Template.md`.
+2. Generate only the table of contents, document control skeleton, and executive summary.
+3. Do not write detailed requirements.
+4. Set generated content to `REVIEW` and halt for human feedback.
 
-### Mode 2: Incremental Mode *(Default)*
+### Mode 2 - Incremental Mode
 
-- **Trigger**: The SRS already exists and work needs to proceed section by section; or the Human instructs the Agent to focus on a specific isolated feature (e.g., *"Only draft the User Authentication requirements"*).
-- **Objective**: Concentrate LLM resources on one specific module at a time to achieve maximum analytical depth, based on the *Incremental Generation with Verification* pattern.
-- **Agent Behavior**:
-  1. Focus exclusively on **one specific section** of the SRS (e.g., only User Roles, or only the API Authentication flow).
-  2. Isolate the context — retrieve only source documents relevant to the specified section and write output exclusively within that section's boundary.
-  3. Apply micro-validation rules from `04-Micro Validation.md` immediately upon completing that section.
-  4. Halt and **await Human review** before moving on to the next section or module.
-- **Constraint**: Do not attempt to output the complete SRS in a single generation block. Use tool calls to incrementally build the output structure to avoid all-or-nothing failures and context limit breaches.
+**Trigger**: The SRS exists, or the user asks for a specific section, module, feature, or requirement set.
 
----
+**Objective**: Work section by section with high accuracy.
 
-### Mode 3: Audit / Validation Mode
+**Agent behavior**:
 
-- **Trigger**: A draft section has been generated, or the Agent is executing `04-Micro Validation.md` / `05-Macro Validation.md`.
-- **Objective**: Inspect the quality of and identify gaps in the existing SRS document **without modifying the source**, analogous to the concept of *Verifiable Rewards* in Agent training.
-- **Agent Behavior**:
-  1. Activate **Read-Only** state — no writes to the SRS file.
-  2. Load the existing SRS content and cross-reference it against the Input Contract.
-  3. Apply the "Reflection Pattern" — the Agent enters a self-review loop, evaluating its own output against formatting rules and domain constraints.
-  4. Run all checks defined in `05-Macro Validation.md`.
-  5. Output an **Issue List**, **Gap Analysis**, or **Traceability Report**.
-- **Constraint**: Do **not** directly modify the SRS file. Do **not** introduce new business requirements during this mode. Focus solely on resolving `[CONFLICT]` flags, clarifying `[ASSUMPTION]` tags, and improving syntactic quality.
+1. Focus on one specific section or module.
+2. Load only the source material relevant to that section.
+3. Read the existing target section before editing it.
+4. Apply Micro Validation after writing.
+5. Set completed work to `REVIEW` and halt for human review.
 
----
+### Mode 3 - Audit / Validation Mode
 
-### Mode 4: Change Request / Patch Mode
+**Trigger**: The user asks for an audit, validation is due, or conflict/TBD thresholds are exceeded.
 
-- **Trigger**: New information is introduced via Change Requests (CR), new Meeting Notes, or revised Input Contracts.
-- **Objective**: Handle change requests in a targeted, localized manner — avoid regenerating the entire document.
-- **Agent Behavior**:
-  1. Receive a **Change Request** from the Human.
-  2. Reference `08-Traceability Workflow.md` to identify which Requirement IDs are **directly and indirectly** affected by the CR.
-  3. Generate a **patch draft** — modified content only for the impacted items — and submit it to the Human for review.
-- **Constraint**: Treat the SRS as a **"Living Spec"**. The Agent is strictly prohibited from modifying sections of the document that are not explicitly impacted by the incoming change context.
+**Objective**: Inspect quality without modifying the SRS.
 
----
+**Agent behavior**:
 
-### Mode 5: Full Generation Mode
+1. Enter read-only mode for the SRS.
+2. Apply relevant Micro and Macro Validation checks.
+3. Produce an Issue List, Gap Analysis, Validation Report, or Traceability Report in `Project/`.
+4. Do not introduce new business requirements.
 
-- **Trigger** *(Restricted)*: Activated **only** when:
-  1. The project is in its initial kick-off phase and the target `SRS-Template.md` is completely empty, **OR**
-  2. The Input Contract is extremely small (within the permitted token budget), **OR**
-  3. There is an **explicit override command** from the Human (e.g., *"Generate the entire SRS"*).
-- **Objective**: Generate the complete SRS document from start to finish in a single, sequential pipeline run.
-- **Agent Behavior**:
-  1. Apply the **Planning Pattern (Plan-Act)** — decompose SRS creation into sequential tasks and generate the document section by section.
-  2. Run all pipelines sequentially: from analysis through to final validation.
-- **Constraint**: Do not attempt to output the full SRS in one generation block. Build the output structure incrementally via tool calls to prevent context limit failures.
+### Mode 4 - Change Request / Patch Mode
 
----
+**Trigger**: A new change request, meeting note, revised source, or direct user instruction changes existing requirements.
 
-## 3. State Management & Transition Rules
+**Objective**: Apply change locally after impact analysis.
 
-### 3.1 Pre-Execution Assessment Protocol
+**Agent behavior**:
 
-1. **Assess State First**: The Agent must read the target output file and the change request *before* selecting a Run Mode.
-2. **Bidirectional Sync**: Treat finalized implementation metrics and operational learnings as a feedback loop to continuously refine the spec.
+1. Log the change request.
+2. Reference `Agent/02-SRS/07-Traceability Workflow.md`.
+3. Identify directly and indirectly affected items.
+4. Present impact analysis and halt for explicit human approval before patching approved or review-bound content.
+5. Modify only affected items after approval.
 
-### 3.2 Automatic Mode Transitions
+### Mode 5 - Full Generation Mode
 
-| Condition | Automatic Action |
+**Trigger**: The user explicitly asks for a full SRS, or the target SRS is empty and the mandatory inputs are present.
+
+**Objective**: Generate the complete SRS through an ordered pipeline.
+
+**Agent behavior**:
+
+1. Decompose the SRS into sections.
+2. Generate section by section, not as one uncontrolled block.
+3. Apply validation after each major section.
+4. Keep all generated content in `DRAFT` until it is submitted for review.
+5. Submit completed sections as `REVIEW`; do not set `APPROVED`.
+
+## 3. State Assessment Before Work
+
+Before selecting a mode, the Agent must inspect:
+
+| Item | Purpose |
 |---|---|
-| Logic conflict (`[CONFLICT]`) detected | Switch to **Mode 3 (Audit Mode)** — enumerate all errors and halt execution, deferring all decisions to the Human. |
-| Excessive missing data (`[TBD]` volume too high) | Switch to **Mode 3 (Audit Mode)** — produce a gap report and await Human clarification before resuming. |
+| Existing `Project/` output | Determine whether content already exists. |
+| Current user instruction | Determine whether scope is narrow or broad. |
+| Requirement statuses | Protect `APPROVED` content. |
+| Known gaps or conflicts | Determine whether Audit Mode is required. |
 
-> [!WARNING]
-> When the Agent automatically transitions to Audit Mode, it **must not** attempt to resolve conflicts or fill in missing data autonomously. All resolution authority belongs to the Human.
+## 4. Automatic Mode Transitions
+
+| Condition | Transition |
+|---|---|
+| Same-priority source conflict | Switch to Audit Mode, document conflict, halt. |
+| Fatal mandatory input gap | Switch to questionnaire output, halt. |
+| More than 30 percent TBD density in a section | Switch to Audit Mode, produce gap report, halt. |
+| User introduces a change to existing requirements | Switch to Change Request / Patch Mode. |
+
+## 5. Regeneration Constraint
+
+The Agent must never regenerate an entire SRS unless:
+
+1. The user explicitly requests full regeneration.
+2. The existing target file is empty.
+3. The Agent is operating in Full Generation Mode.
+
+When existing content has `APPROVED` status, any modification requires an approved change request or explicit human instruction.

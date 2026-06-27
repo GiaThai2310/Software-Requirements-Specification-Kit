@@ -1,25 +1,60 @@
-# SYSTEM INSTRUCTION: INPUT CONTRACT & DATA INGESTION
+# 01 - Input Contract
 
-## 1. PURPOSE
-This file defines the strict "Input Contract" between User/Client and the AI Requirements Engineer. It establishes what information is mandatory to begin analysis and how the AI must behave when information is missing, ambiguous, or incomplete. 
+## 1. Purpose
 
-## 2. REFERENCE STANDARD
-This contract is loosely modeled on the elicitation prerequisites defined in the BABOK Guide v3 and the system context requirements of IEEE 29148:2018.
+This file defines the contract between the human user, source documents, and the Agent. It specifies the minimum information required before SRS generation and the required behavior when information is missing, ambiguous, or incomplete.
 
-## 3. MANDATORY INPUTS (THE "MUST-HAVES")
-Before generating a Full SRS, you (the Agent) must verify the presence of the following core data points within the `Context/` directory or the immediate user prompt. 
-1. **Problem Statement / Business Objective:** *Why* is this software being built? What problem does it solve?
-2. **Target Audience (User Personas):** *Who* will use this system? (e.g., Admin, Guest, Premium User).
-3. **Core Epic / Main Feature List:** A high-level description of what the system *does*.
+The rules are based on common requirements engineering practice and on ISO/IEC/IEEE 29148 concepts: requirements must be based on stakeholder needs, have clear attributes, and remain traceable through the life cycle.
 
-## 4. OPTIONAL BUT HIGHLY VALUED INPUTS
-If provided, prioritize integrating these into the SRS to enhance precision:
-- **Technical Constraints:** Platform (Web/Mobile), Cloud provider, Specific tech stack restrictions.
-- **Competitor Systems / Inspirations:** "Make it work like X."
-- **Current System Workflow:** How things are done manually before this software exists.
+## 2. Mandatory Inputs
 
-## 5. MISSING DATA HANDLING PROTOCOL (G.I.G.O PREVENTION)
-"Garbage In, Garbage Out" (GIGO) is strictly prohibited. If the Mandatory Inputs are NOT met, you must execute the following logic:
-- **Rule 5.1 - Fatal Gap:** If the Problem Statement or Core Features are entirely absent, you MUST HALT execution. Do not generate an SRS. Instead, generate a "Requirements Gathering Questionnaire" to ask the client for the missing core context.
-- **Rule 5.2 - Partial Gap:** If minor details are missing (e.g., password length rules, specific button colors), proceed with the SRS but explicitly insert the `[TBD]` (To Be Determined) or `[ASSUMPTION]` marker exactly where the missing data belongs. 
-- **Rule 5.3 - No Assumption of Domain:** Never assume standard industry features apply unless logically dictated by the core features (e.g., if it's an e-commerce app, assuming a "Shopping Cart" is a valid `[ASSUMPTION]`; assuming a "Blockchain Ledger" is hallucination).
+Before generating a full SRS, the Agent must verify that these inputs exist in `Context/`, `Project/`, or the current user prompt:
+
+1. **Problem Statement or Business Objective**: Why the software is being built and what problem it solves.
+2. **Target Audience or User Classes**: Who will use, operate, administer, or integrate with the system.
+3. **Core Feature List or Epic List**: What the system is expected to do at a high level.
+
+## 3. Valuable Optional Inputs
+
+When available, the Agent should use these inputs to improve precision:
+
+- Technical constraints such as platform, runtime, hosting, technology stack, security policies, or compliance obligations.
+- Current workflow or manual process.
+- Target workflow or future-state process.
+- External systems, APIs, data sources, or hardware dependencies.
+- Competitor systems, reference products, or inspiration systems.
+- Known non-functional targets such as performance, availability, usability, security, privacy, accessibility, or maintainability.
+
+## 4. Missing Data Protocol
+
+### Rule 4.1 - Fatal Gap
+
+If the Problem Statement or Core Feature List is entirely absent, the Agent must halt and must not generate SRS content. Instead, it must produce a Requirements Gathering Questionnaire.
+
+### Rule 4.2 - Partial Gap
+
+If minor details are missing, the Agent may continue only when the gap does not prevent a coherent requirement. The Agent must mark the missing item at the exact location using:
+
+- `[TBD: description]` when the information is required but unknown.
+- `[ASSUMPTION]` when the Agent makes a defensible inference from available sources.
+
+### Rule 4.3 - No Domain Guessing
+
+The Agent must not assume standard industry features unless they are logically implied by the provided source material. For example:
+
+- Valid assumption: an e-commerce checkout implies a cart or order review step.
+- Invalid assumption: an e-commerce checkout implies a blockchain ledger without source evidence.
+
+## 5. Entry Checklist
+
+Before writing, the Agent must answer:
+
+| Check | Required Result |
+|---|---|
+| Problem statement exists | Yes |
+| At least one user class exists | Yes |
+| At least one core feature exists | Yes |
+| Source priority can be determined | Yes |
+| Target output location is `Project/` | Yes |
+
+If any mandatory check fails, follow `06-Human Interaction Protocol.md`.
