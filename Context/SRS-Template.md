@@ -389,9 +389,9 @@ The conceptual data model identifies the core business entities and relationship
 
 #### 9.2.1 Conceptual Entity Summary
 
-| Entity ID | Entity Name | Business Definition | Primary Owner | Created By | Used By | Related Features | Status |
-|---|---|---|---|---|---|---|---|
-| ENT-GEN-001 | `<Entity Name>` | `<Business meaning of the entity>` | `<Role or system>` | `<Actor/system>` | `<Actor/system/report/API>` | `<Feature IDs>` | DRAFT |
+| Entity ID | Entity Name | Business Definition | Description | Primary Owner | Created By | Used By | Related Features | Status |
+|---|---|---|---|---|---|---|---|---|
+| ENT-GEN-001 | `<Entity Name>` | `<Business meaning of the entity>` | `<Detailed description of the entity, its purpose, scope, and key characteristics>` | `<Role or system>` | `<Actor/system>` | `<Actor/system/report/API>` | `<Feature IDs>` | DRAFT |
 
 #### 9.2.2 Conceptual Relationship Summary
 
