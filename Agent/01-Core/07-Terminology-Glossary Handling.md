@@ -60,7 +60,7 @@ The Agent must not coin abbreviations or specialized labels unless:
 
 The final SRS should include glossary content in:
 
-- Section 1.4 - Definitions, Acronyms and Abbreviations.
+- Section 1.4 - Definitions, Acronyms And Abbreviations.
 - Appendix 18.1 - Glossary, when the glossary is long or needs supporting detail.
 
 ## 6. Final Glossary Format

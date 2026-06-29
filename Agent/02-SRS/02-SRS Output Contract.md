@@ -28,7 +28,7 @@ Legend:
 | 0. Document Control | O | R | R |
 | 1. Introduction | R | R | R |
 | 2. Overall Description | R | R | R |
-| 3. Stakeholders, Actors and External Systems | C | R | R |
+| 3. Stakeholders, Actors And External Systems | C | R | R |
 | 4. Business Context | C | R | R |
 | 5. Product Features | R | R | R |
 | 6. Use Case Specifications | O | R | R |
@@ -36,13 +36,13 @@ Legend:
 | 8. Functional Requirements | R | R | R |
 | 9. Data Requirements And Data Model | O | R | R |
 | 10. External Interface Requirements | C | R | R |
-| 11. Non-functional Requirements | C | R | R |
+| 11. Non-Functional Requirements | C | R | R |
 | 12. Access Control Requirements | O | R | R |
 | 13. State Models | X | C | R |
-| 14. Error Handling and Edge Cases | O | R | R |
-| 15. Acceptance Criteria and Verification | C | R | R |
+| 14. Error Handling And Edge Cases | O | R | R |
+| 15. Acceptance Criteria And Verification | C | R | R |
 | 16. Requirements Traceability | X | R | R |
-| 17. Open Questions, Decisions and Risks | R | R | R |
+| 17. Open Questions, Decisions And Risks | R | R | R |
 | 18. Appendices | O | R | R |
 | 19. Requirement Identification Convention | R | R | R |
 | 20. Requirement Status Convention | R | R | R |
