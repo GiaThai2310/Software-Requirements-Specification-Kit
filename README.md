@@ -7,16 +7,8 @@
 
 ---
 
-## 🌐 Select Language / Chọn Ngôn Ngữ
-
-> [!NOTE]
-> Click on one of the sections below to expand the documentation in your preferred language.
-> Nhấp vào một trong các phần dưới đây để mở tài liệu bằng ngôn ngữ bạn muốn.
-
----
-
 <details open>
-<summary><b>🇺🇸 English Version</b> (Click to collapse/expand)</summary>
+<summary><b>🇺🇸 English Version</b></summary>
 
 ## 📖 Overview
 
@@ -44,7 +36,7 @@ Software Requirements Specification Kit/
 │   ├── 02-SRS/                    # SRS writing, validation, and change control rules
 │   └── AGENTS.md                  # Master Agent Directive (System Instruction)
 ├── Context/                       # Input documents and structures
-│   ├── Context.md                 # Client inputs, briefs, and notes
+│   ├── Context.md.example         # Template for client inputs, briefs, and notes
 │   ├── SRS-TOC.md                 # Canonical SRS Table of Contents
 │   └── SRS-Template.md            # Markdown template for SRS documents
 ├── Human/                         # Onboarding and guides for human engineers
@@ -127,7 +119,7 @@ Each item is tracked using a unique identifier: `<TYPE>-<DOMAIN>-<NNN>`
 ## 🚀 Getting Started
 
 ### 👥 For Humans
-1.  **Prepare context**: Put client briefs, emails, meeting notes, or business goals inside [`Context/Context.md`](Context/Context.md).
+1.  **Prepare context**: Copy `Context/Context.md.example` to `Context/Context.md` and put your client briefs, emails, meeting notes, or business goals inside `Context/Context.md` (Note: `Context.md` is ignored by Git to keep your data secure).
 2.  **Instruct the Agent**:
     *   *To start a new project*: `"Run Draft Mode on Project/SRS-MyProject.md based on Context/Context.md"`
     *   *To write a feature*: `"Write Section 5 (Product Features) in Project/SRS-MyProject.md"`
@@ -149,7 +141,7 @@ Each item is tracked using a unique identifier: `<TYPE>-<DOMAIN>-<NNN>`
 ---
 
 <details>
-<summary><b>🇻🇳 Bản Tiếng Việt</b> (Bấm để mở rộng/thu gọn)</summary>
+<summary><b>🇻🇳 Bản Tiếng Việt</b></summary>
 
 ## 📖 Tổng Quan
 
@@ -177,7 +169,7 @@ Software Requirements Specification Kit/
 │   ├── 02-SRS/                    # Quy tắc viết SRS, xác thực và kiểm soát thay đổi
 │   └── AGENTS.md                  # Chỉ thị Master Agent (System Instruction)
 ├── Context/                       # Tài liệu đầu vào và các biểu mẫu cấu trúc
-│   ├── Context.md                 # Brief, ghi chú và yêu cầu từ khách hàng
+│   ├── Context.md.example         # File mẫu chứa brief, ghi chú và yêu cầu từ khách hàng
 │   ├── SRS-TOC.md                 # Mục lục SRS chuẩn hóa
 │   └── SRS-Template.md            # Biểu mẫu Markdown chuẩn để tạo SRS
 ├── Human/                         # Tài liệu onboarding và hướng dẫn cho con người
@@ -260,7 +252,7 @@ Mỗi mục yêu cầu được theo dõi bằng mã định dạng duy nhất: 
 ## 🚀 Hướng Dẫn Bắt Đầu
 
 ### 👥 Dành cho Con người (Human)
-1.  **Chuẩn bị thông tin đầu vào**: Đưa brief khách hàng, email, ghi chú cuộc họp vào file [`Context/Context.md`](Context/Context.md).
+1.  **Chuẩn bị thông tin đầu vào**: Sao chép file `Context/Context.md.example` thành `Context/Context.md` và đưa brief khách hàng, email, ghi chú cuộc họp vào file mới tạo `Context/Context.md` này. (Lưu ý: `Context.md` đã được bỏ qua trong Git để bảo mật dữ liệu của bạn).
 2.  **Ra lệnh cho AI Agent**:
     *   *Để khởi tạo dự án*: `"Run Draft Mode on Project/SRS-MyProject.md based on Context/Context.md"`
     *   *Để viết một tính năng*: `"Write Section 5 (Product Features) in Project/SRS-MyProject.md"`
@@ -280,4 +272,3 @@ Mỗi mục yêu cầu được theo dõi bằng mã định dạng duy nhất: 
 </details>
 
 ---
-*Created and maintained by the Software Requirements Engineering team. Tuân thủ tiêu chuẩn kỹ nghệ phần mềm chất lượng cao.*

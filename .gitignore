@@ -1,1 +1,5 @@
 Project/
+Context/*
+!Context/SRS-TOC.md
+!Context/SRS-Template.md
+!Context/Context.md.example
